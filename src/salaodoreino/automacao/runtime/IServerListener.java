@@ -14,4 +14,6 @@ public interface IServerListener {
 	void Notify(String string);
 
 	Mensagem clientSendMessage(Mensagem msg);
+
+	void clientDisconected(Cliente cliente);
 }

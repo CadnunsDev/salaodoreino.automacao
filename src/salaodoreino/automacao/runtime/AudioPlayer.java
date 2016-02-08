@@ -26,8 +26,7 @@ public class AudioPlayer implements Runnable {
 	}
 	
 	void buildPlayer() throws Exception{
-		FileInputStream fis = new FileInputStream(file);
-		BufferedInputStream bis = new BufferedInputStream(fis);
+		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
 		
 		player = new Player(bis);
 	}

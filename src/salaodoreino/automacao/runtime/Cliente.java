@@ -19,6 +19,7 @@ public class Cliente implements Runnable{
 		this.connection = connection;
 		clienteOutput = new PrintStream(connection.getOutputStream());
 		thread =  new Thread(this);
+		sendResponse(new Mensagem(this, servidor, "conected", Origem.Servidor));
 	}
 
 	public void run() {
@@ -30,22 +31,26 @@ public class Cliente implements Runnable{
 				Mensagem resposta = servidor.clientSendMessage(msg);
 				sendResponse(resposta);
 			}
+			s.close();
+			removeConnection();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			servidor.errorWhenListeningCliente(this, e);
 		}
-		
-		if (s != null) {
-			while (s.hasNextLine()) {
-				String ss = s.nextLine();
-
-				System.out.println(ss);
-			}
-			s.close();
-		}		
 	}
 
-	private void sendResponse(Mensagem resposta) {
+	private void removeConnection() {
+		try {
+			connection.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		thread.interrupt();
+		servidor.remove(this);
+	}
+
+	public void sendResponse(Mensagem resposta) {
 		clienteOutput.println("servidor = "+resposta.getServidor().getHost()+", mensagem->"+resposta.getMensagem());		
 	}
 
@@ -55,7 +60,15 @@ public class Cliente implements Runnable{
 		}
 		if (!connection.isClosed()) {
 			connection.close();
-		}
-		
+		}		
 	}
+
+	public String getIp() {		
+		return ip;
+	}
+
+	public void startConn(){
+		thread.start();
+	}
+	
 }
